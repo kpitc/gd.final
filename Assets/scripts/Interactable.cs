@@ -5,17 +5,95 @@ using UnityEngine;
 //template(father script of all interactables, only handles code for desk tho)
 public class Interactable : MonoBehaviour
 {
+
+    protected bool chosenOnce = false;    //what tree level are we at 
+    protected int optionNum = 0;        //which option 1 or 2( A or B )respectively
+
     public virtual void Interact() {
-        Debug.Log("reaching interact method with " + gameObject.name);
 
-        FindFirstObjectByType<InteractionUIManager>().displayInt(
-            "You feel something strange about this desk...",
-            "Why is it important?",
-            "Why was it left behind?",
-            () => Debug.Log("You chose: Importance"),       // Option 1 logic
-            () => Debug.Log("You chose: Left behind")       // Option 2 logic
-        );
-
+        if (!chosenOnce)
+        {
+            FindFirstObjectByType<InteractionUIManager>().displayInt(
+                initDialogue(),
+                firstWhyOption1(),
+                firstWhyOption2(),
+                () => { optionNum = 1; chosenOnce = true; ShowSecondLayer(); },
+                () => { optionNum = 2; chosenOnce = true; ShowSecondLayer(); }
+            );
+        } else {
+            ShowSecondLayer();  //keep shoing second layer if already chosen
+        }
 
     }
+
+
+    //shows second lauer of options based on which "why?" was chosen
+    private void ShowSecondLayer()
+    {
+        Tracker tracker = FindFirstObjectByType<Tracker>();
+
+        string topText = initDialogue();
+
+
+        if (optionNum == 1) {
+            if (tracker.revealFlag) {
+                FindFirstObjectByType<InteractionUIManager>().displayInt(
+                    topText,
+                    secondWhy1A_Reveal(),
+                    secondWhy1B_Reveal(),
+                    null, null
+                );
+            }
+            else {
+                FindFirstObjectByType<InteractionUIManager>().displayInt(
+                    topText,
+                    secondWhy1A(),
+                    secondWhy1B(),
+                    null, null
+                );
+            }
+        }
+        else if (optionNum == 2) 
+        {
+            if (tracker.revealFlag)
+            {
+                FindFirstObjectByType<InteractionUIManager>().displayInt(
+                    topText,
+                    secondWhy2A_Reveal(),
+                    secondWhy2B_Reveal(),
+                    null, null
+                );
+            }
+            else
+            {
+                FindFirstObjectByType<InteractionUIManager>().displayInt(
+                    topText,
+                    secondWhy2A(),
+                    secondWhy2B(),
+                    null, null
+                );
+            }
+        }
+
+        // Optionally increment the interaction tracker here
+        tracker.RegisterInteraction();
+    }
+
+    // Override these in child classes
+    protected virtual string initDialogue() => "";
+
+    protected virtual string firstWhyOption1() => "";
+    protected virtual string firstWhyOption2() => "";
+
+    protected virtual string secondWhy1A() => "";
+    protected virtual string secondWhy1B() => "";
+    protected virtual string secondWhy2A() => "";
+    protected virtual string secondWhy2B() => "";
+
+    protected virtual string secondWhy1A_Reveal() => "";
+    protected virtual string secondWhy1B_Reveal() => "";
+    protected virtual string secondWhy2A_Reveal() => "";
+    protected virtual string secondWhy2B_Reveal() => "";
+
+
 }

@@ -35,23 +35,39 @@ public class InteractionUIManager : MonoBehaviour
         this.onOptionB = onOptionB;
 
         //sets respective text to button
-        optionButtonA.GetComponentInChildren<TextMeshProUGUI>().text = optionAText;
-        optionButtonB.GetComponentInChildren<TextMeshProUGUI>().text = optionBText;
+        //optionButtonA.GetComponentInChildren<TextMeshProUGUI>().text = optionAText;
+        //optionButtonB.GetComponentInChildren<TextMeshProUGUI>().text = optionBText;
+
+        bool hasOptionA = !string.IsNullOrEmpty(optionAText);
+        bool hasOptionB = !string.IsNullOrEmpty(optionBText);
+
+        optionButtonA.gameObject.SetActive(hasOptionA);
+        optionButtonA.gameObject.SetActive(hasOptionB);
+
 
         //resets button behavior
-        optionButtonA.onClick.RemoveAllListeners();
-        optionButtonB.onClick.RemoveAllListeners();
+       
 
-        //when player clicks a button, run appropriate action then hide UI panel
-        optionButtonA.onClick.AddListener(() => {
-            onOptionA?.Invoke();
-            hideInt();
-        });
+        if (hasOptionA) {
+            this.onOptionA = onOptionA;
+            optionButtonA.GetComponentInChildren<TextMeshProUGUI>().text = optionAText;
+            optionButtonA.onClick.RemoveAllListeners();
+            optionButtonA.onClick.AddListener(() => {
+                onOptionA?.Invoke();
+                hideInt();
+            });
+        }
 
-        optionButtonB.onClick.AddListener(() => {
-            onOptionB?.Invoke();
-            hideInt();
-        });
+        if (hasOptionB) {
+            this.onOptionB = onOptionB;
+            optionButtonB.GetComponentInChildren<TextMeshProUGUI>().text = optionBText;
+            optionButtonB.onClick.RemoveAllListeners();
+            optionButtonB.onClick.AddListener(() => {
+                onOptionB?.Invoke();
+                hideInt();
+            });
+        }
+    
 
         Cursor.lockState = CursorLockMode.None;  // unlock the cursor
         Cursor.visible = true;                   // show the cursor
