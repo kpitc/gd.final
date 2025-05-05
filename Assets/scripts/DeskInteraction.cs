@@ -23,7 +23,6 @@ public class DeskInteraction : Interactable
     protected override string secondWhy2B() => 
         "He couldn’t take it with him — but maybe he never left.";
 
-
     protected override string secondWhy1A_Reveal() =>
         "Because I thought if I could find the pattern, I could escape.";
 

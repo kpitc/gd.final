@@ -43,48 +43,57 @@ public class InteractionUIManager : MonoBehaviour
 
         optionButtonA.gameObject.SetActive(hasOptionA);
         optionButtonA.gameObject.SetActive(hasOptionB);
-
-
+            
+        optionButtonA.onClick.RemoveAllListeners();
+        optionButtonB.onClick.RemoveAllListeners();
         //resets button behavior
        
 
         if (hasOptionA) {
             this.onOptionA = onOptionA;
             optionButtonA.GetComponentInChildren<TextMeshProUGUI>().text = optionAText;
-            optionButtonA.onClick.RemoveAllListeners();
             optionButtonA.onClick.AddListener(() => {
                 onOptionA?.Invoke();
-                hideInt();
             });
         }
 
         if (hasOptionB) {
             this.onOptionB = onOptionB;
             optionButtonB.GetComponentInChildren<TextMeshProUGUI>().text = optionBText;
-            optionButtonB.onClick.RemoveAllListeners();
             optionButtonB.onClick.AddListener(() => {
                 onOptionB?.Invoke();
-                hideInt();
             });
         }
     
 
-        Cursor.lockState = CursorLockMode.None;  // unlock the cursor
-        Cursor.visible = true;                   // show the cursor
+        if (GameState.Instance == null || GameState.Instance.currentPhase == GamePhase.InGame)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
 
-        //disable your player movement script here
-        FindFirstObjectByType<FirstPersonController>().enabled = false;
-
+            FirstPersonController player = FindFirstObjectByType<FirstPersonController>();
+            if (player != null)
+                player.enabled = false;
+        }
     }
+ 
+
 
     //simple hide pop-up
     public void hideInt()
     {
-        uiPanel.SetActive(false);
-        Cursor.lockState = CursorLockMode.Locked;  // lock cursor
-        Cursor.visible = false;                   // hide it again
 
-        // renable movement
-        FindFirstObjectByType<FirstPersonController>().enabled = true;
+        uiPanel.SetActive(false);
+
+        if (GameState.Instance == null || GameState.Instance.currentPhase == GamePhase.InGame)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            FirstPersonController player = FindFirstObjectByType<FirstPersonController>();
+            if (player != null)
+                player.enabled = true;
+        }
     }
+
 }

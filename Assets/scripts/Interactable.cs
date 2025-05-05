@@ -10,6 +10,7 @@ public class Interactable : MonoBehaviour
     protected int optionNum = 0;        //which option 1 or 2( A or B )respectively
 
     public virtual void Interact() {
+        Debug.Log("Interact method triggered on " + gameObject.name);
 
         if (!chosenOnce)
         {
@@ -29,55 +30,77 @@ public class Interactable : MonoBehaviour
 
     //shows second lauer of options based on which "why?" was chosen
     private void ShowSecondLayer()
+{
+    Tracker tracker = FindFirstObjectByType<Tracker>();
+    string topText = initDialogue();
+
+
+    if (optionNum == 1)
     {
-        Tracker tracker = FindFirstObjectByType<Tracker>();
-
-        string topText = initDialogue();
-
-
-        if (optionNum == 1) {
-            if (tracker.revealFlag) {
-                FindFirstObjectByType<InteractionUIManager>().displayInt(
-                    topText,
-                    secondWhy1A_Reveal(),
-                    secondWhy1B_Reveal(),
-                    null, null
-                );
-            }
-            else {
-                FindFirstObjectByType<InteractionUIManager>().displayInt(
-                    topText,
-                    secondWhy1A(),
-                    secondWhy1B(),
-                    null, null
-                );
-            }
-        }
-        else if (optionNum == 2) 
+        if (tracker.revealFlag)
         {
-            if (tracker.revealFlag)
+            FindFirstObjectByType<InteractionUIManager>().displayInt(
+                topText,
+                secondWhy1A_Reveal(),
+                secondWhy1B_Reveal(),
+                () => FindFirstObjectByType<InteractionUIManager>().hideInt(),
+                () => FindFirstObjectByType<InteractionUIManager>().hideInt()
+            );
+        }
+        else
+        {
+            FindFirstObjectByType<InteractionUIManager>().displayInt(
+                topText,
+                secondWhy1A(),
+                secondWhy1B(),
+                () => FindFirstObjectByType<InteractionUIManager>().hideInt(),
+                () => FindFirstObjectByType<InteractionUIManager>().hideInt()
+            );
+        }
+    }
+        else if (optionNum == 2)
+    {
+        if (tracker.revealFlag)
+        {
+            // 🔔 Check for final interaction case
+            if (this is RecorderInteraction)
             {
                 FindFirstObjectByType<InteractionUIManager>().displayInt(
                     topText,
-                    secondWhy2A_Reveal(),
-                    secondWhy2B_Reveal(),
-                    null, null
+                    "This recording is the lock. And I... I am the key.",
+                    "Play it.\nAnd everything ends.",
+                    () => FindFirstObjectByType<InteractionUIManager>().hideInt(),
+                    () => {
+                        TriggerFinalSequence();
+                        FindFirstObjectByType<InteractionUIManager>().hideInt();
+                    }
                 );
             }
             else
             {
                 FindFirstObjectByType<InteractionUIManager>().displayInt(
                     topText,
-                    secondWhy2A(),
-                    secondWhy2B(),
-                    null, null
+                    secondWhy2A_Reveal(),
+                    secondWhy2B_Reveal(),
+                    () => FindFirstObjectByType<InteractionUIManager>().hideInt(),
+                    () => FindFirstObjectByType<InteractionUIManager>().hideInt()
                 );
             }
         }
-
-        // Optionally increment the interaction tracker here
-        tracker.RegisterInteraction();
+        else
+        {
+            FindFirstObjectByType<InteractionUIManager>().displayInt(
+                topText,
+                secondWhy2A(),
+                secondWhy2B(),
+                () => FindFirstObjectByType<InteractionUIManager>().hideInt(),
+                () => FindFirstObjectByType<InteractionUIManager>().hideInt()
+            );
+        }
     }
+
+    tracker.RegisterInteraction();
+}
 
     // Override these in child classes
     protected virtual string initDialogue() => "";
@@ -94,6 +117,10 @@ public class Interactable : MonoBehaviour
     protected virtual string secondWhy1B_Reveal() => "";
     protected virtual string secondWhy2A_Reveal() => "";
     protected virtual string secondWhy2B_Reveal() => "";
+
+    protected virtual void TriggerFinalSequence() {
+        //do nothing
+    }
 
 
 }

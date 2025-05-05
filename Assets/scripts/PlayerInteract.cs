@@ -9,6 +9,10 @@ public class PlayerInteract : MonoBehaviour
 
     private void Update() {
 
+
+        if (GameState.Instance != null && GameState.Instance.currentPhase != GamePhase.InGame)
+            return;
+            
         if (Input.GetKeyDown(KeyCode.E)) {
 
             //collision "sphere" for player to detect nearby objects

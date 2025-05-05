@@ -8,7 +8,9 @@ public class Tracker : MonoBehaviour
     public void RegisterInteraction()
     {
         interactionCount++;
-        if (interactionCount >= 5)
+        Debug.Log("Interaction Count: " + interactionCount);
+
+        if (interactionCount >= 4)
         {
             revealFlag = true;
             Debug.Log("Reveal Triggered");
