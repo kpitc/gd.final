@@ -62,7 +62,7 @@ public class Interactable : MonoBehaviour
     {
         if (tracker.revealFlag)
         {
-            // 🔔 Check for final interaction case
+            // Check for final interaction case
             if (this is RecorderInteraction)
             {
                 FindFirstObjectByType<InteractionUIManager>().displayInt(
